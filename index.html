@@ -1,0 +1,1885 @@
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudStock | Premium Cloud-Based Inventory Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --cream: #FDFBF7;
+            --white: #FFFFFF;
+            --brown-50: #F9F5F0;
+            --brown-100: #F0E6D8;
+            --brown-200: #E0C9B1;
+            --brown-300: #C9A77E;
+            --brown-400: #B0865A;
+            --brown-500: #966B40;
+            --brown-600: #7A5432;
+            --brown-700: #5E4027;
+            --brown-800: #432D1C;
+            --brown-900: #2A1C11;
+            --gold: #D4A853;
+            --gold-light: #E8C87A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--cream);
+            color: var(--brown-900);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--brown-700);
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1.5px solid var(--brown-400);
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+        }
+
+        body:hover .cursor-outline {
+            opacity: 1;
+        }
+
+        .cursor-outline.hover {
+            width: 70px;
+            height: 70px;
+            background: rgba(150, 107, 64, 0.1);
+            border-color: var(--brown-600);
+        }
+
+        @media (pointer: coarse) {
+            .cursor-dot, .cursor-outline {
+                display: none;
+            }
+            body {
+                cursor: auto;
+            }
+        }
+
+        /* Scroll Progress */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--brown-500), var(--gold));
+            z-index: 9998;
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        /* Grain Overlay */
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9000;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Premium Gradients */
+        .gradient-text {
+            background: linear-gradient(135deg, var(--brown-800) 0%, var(--brown-500) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--brown-50) 50%, var(--brown-100) 100%);
+        }
+
+        .brown-gradient {
+            background: linear-gradient(135deg, var(--brown-800) 0%, var(--brown-700) 50%, var(--brown-600) 100%);
+        }
+
+        /* Glass Morphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(150, 107, 64, 0.1);
+        }
+
+        .glass-dark {
+            background: rgba(42, 28, 17, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 168, 83, 0.2);
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        @keyframes floatReverse {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(20px) rotate(-2deg); }
+        }
+
+        .float { animation: float 6s ease-in-out infinite; }
+        .float-reverse { animation: floatReverse 7s ease-in-out infinite; }
+        .float-slow { animation: float 8s ease-in-out infinite; }
+
+        /* Pulse Animation */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(150, 107, 64, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(150, 107, 64, 0.4); }
+        }
+
+        .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+
+        /* Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Card Hover Effects */
+        .premium-card {
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(42, 28, 17, 0.12);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brown-700) 0%, var(--brown-600) 100%);
+            color: white;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(150, 107, 64, 0.4);
+        }
+
+        .btn-outline {
+            border: 1.5px solid var(--brown-400);
+            color: var(--brown-700);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .btn-outline:hover {
+            background: var(--brown-700);
+            color: white;
+            border-color: var(--brown-700);
+            transform: translateY(-3px);
+        }
+
+        /* Navigation */
+        .nav-hidden { transform: translateY(-100%); }
+        .nav-visible { transform: translateY(0); }
+
+        /* Dashboard Mockup */
+        .dashboard-mockup {
+            perspective: 1500px;
+            transform-style: preserve-3d;
+        }
+
+        .dashboard-card {
+            transform: rotateY(-15deg) rotateX(5deg);
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 
+                0 50px 100px rgba(42, 28, 17, 0.2),
+                0 20px 40px rgba(42, 28, 17, 0.1);
+        }
+
+        .dashboard-card:hover {
+            transform: rotateY(-5deg) rotateX(2deg) scale(1.02);
+        }
+
+        /* Progress Ring */
+        .progress-ring-circle {
+            transition: stroke-dashoffset 1.5s ease-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Marquee */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .marquee-track {
+            animation: marquee 30s linear infinite;
+        }
+
+        .marquee-track:hover {
+            animation-play-state: paused;
+        }
+
+        /* Accordion */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 300px;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(45deg);
+        }
+
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* Tab Active State */
+        .tab-btn.active {
+            background: var(--brown-700);
+            color: white;
+        }
+
+        /* Stats Counter */
+        .stat-value {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Smooth Image Parallax */
+        .parallax-img {
+            transition: transform 0.1s linear;
+        }
+
+        /* Chart Bars */
+        .chart-bar {
+            transition: height 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Testimonial Card */
+        .testimonial-card {
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .testimonial-card:hover {
+            transform: scale(1.03);
+        }
+
+        /* Pricing Card Featured */
+        .pricing-featured {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        /* Input Focus */
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--brown-500);
+            box-shadow: 0 0 0 4px rgba(150, 107, 64, 0.1);
+        }
+
+        /* Loading Screen */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--cream);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--brown-800);
+            letter-spacing: 0.3em;
+            overflow: hidden;
+        }
+
+        .loader-bar {
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--brown-500), var(--gold));
+            margin-top: 1rem;
+            transition: width 1.5s ease;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="text-center">
+            <div class="loader-text">CLOUDSTOCK</div>
+            <div class="loader-bar" id="loaderBar"></div>
+        </div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Grain Overlay -->
+    <div class="grain-overlay"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full z-50 transition-all duration-500 nav-hidden py-4">
+        <div class="w-full px-6 lg:px-12">
+            <div class="glass rounded-full px-6 py-3 flex items-center justify-between">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full brown-gradient flex items-center justify-center">
+                        <i data-lucide="cloud" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight font-['Playfair_Display'] text-brown-900">CloudStock</span>
+                </a>
+                
+                <div class="hidden lg:flex items-center gap-8">
+                    <a href="#features" class="text-sm font-medium text-brown-700 hover:text-brown-500 transition-colors">Features</a>
+                    <a href="#solutions" class="text-sm font-medium text-brown-700 hover:text-brown-500 transition-colors">Solutions</a>
+                    <a href="#analytics" class="text-sm font-medium text-brown-700 hover:text-brown-500 transition-colors">Analytics</a>
+                    <a href="#pricing" class="text-sm font-medium text-brown-700 hover:text-brown-500 transition-colors">Pricing</a>
+                </div>
+
+                <div class="hidden lg:flex items-center gap-4">
+                    <a href="#" class="text-sm font-semibold text-brown-700 hover:text-brown-500 transition-colors">Sign In</a>
+                    <a href="#demo" class="btn-primary px-6 py-2.5 rounded-full text-sm font-semibold">Book Demo</a>
+                </div>
+
+                <button id="mobileMenuBtn" class="lg:hidden w-10 h-10 flex items-center justify-center text-brown-800">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="fixed inset-0 z-40 glass-dark transform translate-x-full transition-transform duration-500 lg:hidden">
+        <div class="flex flex-col items-center justify-center h-full gap-8">
+            <a href="#features" class="text-2xl text-white font-['Playfair_Display'] mobile-link">Features</a>
+            <a href="#solutions" class="text-2xl text-white font-['Playfair_Display'] mobile-link">Solutions</a>
+            <a href="#analytics" class="text-2xl text-white font-['Playfair_Display'] mobile-link">Analytics</a>
+            <a href="#pricing" class="text-2xl text-white font-['Playfair_Display'] mobile-link">Pricing</a>
+            <a href="#demo" class="btn-primary px-8 py-3 rounded-full text-lg font-semibold mt-4">Book Demo</a>
+        </div>
+        <button id="mobileMenuClose" class="absolute top-8 right-8 text-white">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center overflow-hidden gradient-bg pt-20 lg:pt-0">
+        <!-- Background Orbs -->
+        <div class="orb w-[600px] h-[600px] bg-amber-200 top-[-200px] right-[-200px]"></div>
+        <div class="orb w-[500px] h-[500px] bg-orange-200 bottom-[-150px] left-[-150px]"></div>
+        <div class="orb w-[300px] h-[300px] bg-yellow-100 top-[40%] left-[20%]"></div>
+
+        <div class="w-full px-6 lg:px-12 py-20 lg:py-0 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <!-- Hero Content -->
+                <div class="order-2 lg:order-1">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6 reveal">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <span class="text-xs font-semibold text-brown-700 uppercase tracking-wider">Trusted by 10,000+ Businesses</span>
+                    </div>
+
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.05] mb-6 reveal">
+                        <span class="block text-brown-900">Master Your</span>
+                        <span class="block gradient-text italic">Inventory</span>
+                        <span class="block text-brown-800">In The Cloud</span>
+                    </h1>
+
+                    <p class="text-lg md:text-xl text-brown-600 mb-8 max-w-xl leading-relaxed reveal">
+                        The intelligent cloud platform that transforms how enterprises track, manage, and optimize inventory across every channel and warehouse.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 mb-12 reveal">
+                        <a href="#demo" class="btn-primary px-8 py-4 rounded-full text-base font-semibold text-center">
+                            Start Free Trial
+                        </a>
+                        <a href="#demo" class="btn-outline px-8 py-4 rounded-full text-base font-semibold flex items-center justify-center gap-2">
+                            <i data-lucide="play-circle" class="w-5 h-5"></i>
+                            Watch Demo
+                        </a>
+                    </div>
+
+                    <!-- Hero Stats -->
+                    <div class="grid grid-cols-3 gap-6 reveal">
+                        <div>
+                            <div class="text-3xl md:text-4xl font-bold text-brown-800 stat-value" data-target="99.9">0</div>
+                            <div class="text-sm text-brown-500 mt-1">% Uptime</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl md:text-4xl font-bold text-brown-800 stat-value" data-target="40">0</div>
+                            <div class="text-sm text-brown-500 mt-1">% Faster Fulfillment</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl md:text-4xl font-bold text-brown-800 stat-value" data-target="60">0</div>
+                            <div class="text-sm text-brown-500 mt-1">% Cost Reduction</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Dashboard Mockup -->
+                <div class="order-1 lg:order-2 dashboard-mockup reveal">
+                    <div class="dashboard-card bg-white rounded-3xl p-4 md:p-6 relative">
+                        <!-- Dashboard Header -->
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-1.5 bg-amber-50 rounded-full">
+                                <i data-lucide="cloud" class="w-4 h-4 text-amber-600"></i>
+                                <span class="text-xs font-medium text-amber-800">Cloud Sync Active</span>
+                            </div>
+                        </div>
+
+                        <!-- Dashboard Content -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-4 float">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-medium text-brown-500">Total Stock Value</span>
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-green-600"></i>
+                                </div>
+                                <div class="text-2xl font-bold text-brown-800">$2.4M</div>
+                                <div class="text-xs text-green-600 mt-1">+12.5% vs last month</div>
+                            </div>
+                            <div class="bg-white border border-brown-100 rounded-2xl p-4 float-reverse">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-medium text-brown-500">Low Stock Items</span>
+                                    <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600"></i>
+                                </div>
+                                <div class="text-2xl font-bold text-brown-800">24</div>
+                                <div class="text-xs text-brown-400 mt-1">Need reordering</div>
+                            </div>
+                        </div>
+
+                        <!-- Chart Area -->
+                        <div class="bg-white border border-brown-100 rounded-2xl p-4 mb-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm font-semibold text-brown-700">Inventory Levels</span>
+                                <select class="text-xs bg-brown-50 border-none rounded-lg px-2 py-1 text-brown-600">
+                                    <option>This Week</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end justify-between h-32 gap-2">
+                                <div class="w-full bg-gradient-to-t from-amber-200 to-amber-100 rounded-t-lg chart-bar" style="height: 45%"></div>
+                                <div class="w-full bg-gradient-to-t from-amber-300 to-amber-200 rounded-t-lg chart-bar" style="height: 65%"></div>
+                                <div class="w-full bg-gradient-to-t from-amber-400 to-amber-300 rounded-t-lg chart-bar" style="height: 55%"></div>
+                                <div class="w-full bg-gradient-to-t from-amber-500 to-amber-400 rounded-t-lg chart-bar" style="height: 80%"></div>
+                                <div class="w-full bg-gradient-to-t from-brown-500 to-brown-400 rounded-t-lg chart-bar" style="height: 95%"></div>
+                                <div class="w-full bg-gradient-to-t from-amber-400 to-amber-300 rounded-t-lg chart-bar" style="height: 70%"></div>
+                                <div class="w-full bg-gradient-to-t from-amber-300 to-amber-200 rounded-t-lg chart-bar" style="height: 60%"></div>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-brown-400">
+                                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-brown-50/50 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                                        <i data-lucide="package" class="w-5 h-5 text-amber-700"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold text-brown-800">Stock Received</div>
+                                        <div class="text-xs text-brown-500">Warehouse A • 2m ago</div>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-bold text-green-600">+1,240</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-brown-50/50 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                                        <i data-lucide="truck" class="w-5 h-5 text-orange-700"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold text-brown-800">Order Shipped</div>
+                                        <div class="text-xs text-brown-500">Order #8291 • 5m ago</div>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-bold text-brown-600">384 units</span>
+                            </div>
+                        </div>
+
+                        <!-- Floating Elements -->
+                        <div class="absolute -top-8 -right-8 bg-white rounded-2xl p-4 shadow-xl float-slow hidden md:block">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-brown-800">AI Optimized</div>
+                                    <div class="text-xs text-brown-500">Restock complete</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-xl float hidden md:block">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="zap" class="w-5 h-5 text-amber-500"></i>
+                                <span class="text-sm font-bold text-brown-800">Real-time Sync</span>
+                            </div>
+                            <div class="w-32 h-1.5 bg-brown-100 rounded-full mt-2 overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-amber-400 to-brown-500 rounded-full" style="width: 87%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 opacity-60">
+            <span class="text-xs font-medium text-brown-500 uppercase tracking-widest">Scroll</span>
+            <div class="w-6 h-10 border-2 border-brown-400 rounded-full flex justify-center pt-2">
+                <div class="w-1.5 h-3 bg-brown-500 rounded-full animate-bounce"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Marquee -->
+    <section class="py-16 bg-white border-y border-brown-100 overflow-hidden">
+        <div class="text-center mb-10">
+            <p class="text-sm font-semibold text-brown-400 uppercase tracking-widest reveal">Trusted by industry leaders</p>
+        </div>
+        <div class="relative">
+            <div class="flex marquee-track whitespace-nowrap">
+                <div class="flex items-center gap-16 px-8">
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">LUXEBRANDS</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">TECHFLOW</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">MERIDIAN</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">NEXGEN</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">PRIMESTOCK</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">VANGUARD</span>
+                </div>
+                <div class="flex items-center gap-16 px-8">
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">LUXEBRANDS</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">TECHFLOW</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">MERIDIAN</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">NEXGEN</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">PRIMESTOCK</span>
+                    <span class="text-2xl font-bold text-brown-200 font-['Playfair_Display']">VANGUARD</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why CloudStock Section -->
+    <section id="why" class="py-24 lg:py-32 relative overflow-hidden">
+        <div class="orb w-[400px] h-[400px] bg-amber-100 top-0 right-0"></div>
+        <div class="w-full px-6 lg:px-12 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <p class="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-4">Why CloudStock</p>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-brown-900 mb-6 leading-tight">
+                        Inventory intelligence that <span class="italic gradient-text">scales</span> with your ambition
+                    </h2>
+                    <p class="text-lg text-brown-600 mb-8 leading-relaxed">
+                        Move beyond spreadsheets and disconnected systems. Our cloud-native platform unifies every touchpoint, delivering real-time visibility and predictive insights that drive growth.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex gap-4 p-4 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300">
+                            <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="brain" class="w-7 h-7 text-amber-700"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-brown-800 mb-1">AI-Powered Forecasting</h3>
+                                <p class="text-brown-500">Predict demand with 94% accuracy using machine learning models trained on your historical data.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 p-4 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300">
+                            <div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="globe" class="w-7 h-7 text-orange-700"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-brown-800 mb-1">Multi-Location Sync</h3>
+                                <p class="text-brown-500">Manage unlimited warehouses, stores, and fulfillment centers from a single dashboard.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 p-4 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300">
+                            <div class="w-14 h-14 rounded-2xl bg-brown-100 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="shield-check" class="w-7 h-7 text-brown-700"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-brown-800 mb-1">Enterprise Security</h3>
+                                <p class="text-brown-500">Bank-grade encryption, SOC 2 compliance, and role-based access controls.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative reveal">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+                        <div class="aspect-[4/5] bg-gradient-to-br from-brown-100 via-amber-50 to-orange-100 relative">
+                            <!-- Animated Abstract Graphic -->
+                            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 500" fill="none">
+                                <circle cx="200" cy="250" r="120" fill="url(#grad1)" class="float-slow" opacity="0.8"/>
+                                <circle cx="280" cy="180" r="80" fill="url(#grad2)" class="float" opacity="0.6"/>
+                                <circle cx="120" cy="320" r="60" fill="url(#grad3)" class="float-reverse" opacity="0.5"/>
+                                <defs>
+                                    <radialGradient id="grad1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(200 250) rotate(90) scale(120)">
+                                        <stop stop-color="#B0865A"/>
+                                        <stop offset="1" stop-color="#F0E6D8"/>
+                                    </radialGradient>
+                                    <radialGradient id="grad2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(280 180) rotate(90) scale(80)">
+                                        <stop stop-color="#D4A853"/>
+                                        <stop offset="1" stop-color="#F9F5F0"/>
+                                    </radialGradient>
+                                    <radialGradient id="grad3" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(120 320) rotate(90) scale(60)">
+                                        <stop stop-color="#C9A77E"/>
+                                        <stop offset="1" stop-color="#FFFFFF"/>
+                                    </radialGradient>
+                                </defs>
+                            </svg>
+                            
+                            <!-- Floating Stats Cards -->
+                            <div class="absolute top-12 left-8 bg-white/90 backdrop-blur rounded-2xl p-4 shadow-xl float">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i data-lucide="arrow-up-right" class="w-5 h-5 text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-lg font-bold text-brown-800">+127%</div>
+                                        <div class="text-xs text-brown-500">Efficiency</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="absolute bottom-20 right-8 bg-white/90 backdrop-blur rounded-2xl p-4 shadow-xl float-reverse">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                                        <i data-lucide="bar-chart-3" class="w-5 h-5 text-amber-700"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-lg font-bold text-brown-800">2.4x</div>
+                                        <div class="text-xs text-brown-500">ROI Growth</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <div class="w-32 h-32 rounded-full brown-gradient flex items-center justify-center pulse-glow">
+                                    <i data-lucide="cloud-cog" class="w-16 h-16 text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section id="analytics" class="py-24 lg:py-32 brown-gradient relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-full h-full" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 0); background-size: 40px 40px;"></div>
+        </div>
+        
+        <div class="w-full px-6 lg:px-12 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <p class="text-sm font-semibold text-amber-300 uppercase tracking-widest mb-4">Performance Metrics</p>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">Numbers that speak for themselves</h2>
+                <p class="text-lg text-amber-100/80">Join thousands of businesses that have transformed their inventory operations with CloudStock.</p>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                <!-- Stat 1 -->
+                <div class="glass-dark rounded-3xl p-8 text-center reveal premium-card group">
+                    <div class="relative w-28 h-28 mx-auto mb-6">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="56" cy="56" r="50" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none"/>
+                            <circle cx="56" cy="56" r="50" stroke="#D4A853" stroke-width="8" fill="none" 
+                                stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round"
+                                class="progress-ring-circle" data-percent="99.9"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-white stat-value" data-target="99.9">0</span>
+                            <span class="text-lg font-bold text-white">%</span>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Inventory Accuracy</h3>
+                    <p class="text-sm text-amber-100/60">Real-time tracking eliminates discrepancies</p>
+                </div>
+
+                <!-- Stat 2 -->
+                <div class="glass-dark rounded-3xl p-8 text-center reveal premium-card group">
+                    <div class="relative w-28 h-28 mx-auto mb-6">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="56" cy="56" r="50" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none"/>
+                            <circle cx="56" cy="56" r="50" stroke="#C9A77E" stroke-width="8" fill="none" 
+                                stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round"
+                                class="progress-ring-circle" data-percent="40"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-white stat-value" data-target="40">0</span>
+                            <span class="text-lg font-bold text-white">%</span>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Faster Orders</h3>
+                    <p class="text-sm text-amber-100/60">Automated workflows speed fulfillment</p>
+                </div>
+
+                <!-- Stat 3 -->
+                <div class="glass-dark rounded-3xl p-8 text-center reveal premium-card group">
+                    <div class="relative w-28 h-28 mx-auto mb-6">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="56" cy="56" r="50" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none"/>
+                            <circle cx="56" cy="56" r="50" stroke="#B0865A" stroke-width="8" fill="none" 
+                                stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round"
+                                class="progress-ring-circle" data-percent="60"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-white stat-value" data-target="60">0</span>
+                            <span class="text-lg font-bold text-white">%</span>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Cost Savings</h3>
+                    <p class="text-sm text-amber-100/60">Reduce overstock and stockouts</p>
+                </div>
+
+                <!-- Stat 4 -->
+                <div class="glass-dark rounded-3xl p-8 text-center reveal premium-card group">
+                    <div class="relative w-28 h-28 mx-auto mb-6">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="56" cy="56" r="50" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none"/>
+                            <circle cx="56" cy="56" r="50" stroke="#E8C87A" stroke-width="8" fill="none" 
+                                stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round"
+                                class="progress-ring-circle" data-percent="94"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-white stat-value" data-target="94">0</span>
+                            <span class="text-lg font-bold text-white">%</span>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Forecast Precision</h3>
+                    <p class="text-sm text-amber-100/60">ML-driven demand prediction</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 lg:py-32 relative overflow-hidden">
+        <div class="orb w-[500px] h-[500px] bg-orange-100 bottom-0 left-[-200px]"></div>
+        <div class="w-full px-6 lg:px-12 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <p class="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-4">Platform Features</p>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-brown-900 mb-6">Everything you need to <span class="italic gradient-text">win</span></h2>
+                <p class="text-lg text-brown-600">A complete ecosystem of tools designed for modern inventory management.</p>
+            </div>
+
+            <!-- Feature Tabs -->
+            <div class="flex flex-wrap justify-center gap-3 mb-12 reveal">
+                <button class="tab-btn active px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 bg-brown-100 text-brown-700" data-tab="tracking">Real-Time Tracking</button>
+                <button class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 bg-brown-100 text-brown-700" data-tab="forecasting">AI Forecasting</button>
+                <button class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 bg-brown-100 text-brown-700" data-tab="integration">Integrations</button>
+                <button class="tab-btn px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 bg-brown-100 text-brown-700" data-tab="reporting">Reporting</button>
+            </div>
+
+            <!-- Feature Content -->
+            <div class="relative">
+                <!-- Tracking -->
+                <div class="tab-content active" data-content="tracking">
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <div class="order-2 lg:order-1 reveal">
+                            <div class="bg-white rounded-3xl p-8 shadow-xl relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-40 h-40 bg-amber-100 rounded-full -mr-20 -mt-20"></div>
+                                <div class="relative z-10">
+                                    <div class="flex items-center gap-4 mb-6">
+                                        <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center">
+                                            <i data-lucide="scan-barcode" class="w-7 h-7 text-amber-700"></i>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-brown-800">Barcode & RFID Scanning</h3>
+                                    </div>
+                                    <p class="text-brown-600 mb-6 leading-relaxed">
+                                        Track every item from receiving to shipping with lightning-fast barcode and RFID scanning. Mobile apps keep your team connected anywhere.
+                                    </p>
+                                    <ul class="space-y-3">
+                                        <li class="flex items-center gap-3 text-brown-700">
+                                            <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                            Instant stock updates across all channels
+                                        </li>
+                                        <li class="flex items-center gap-3 text-brown-700">
+                                            <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                            Batch and serial number tracking
+                                        </li>
+                                        <li class="flex items-center gap-3 text-brown-700">
+                                            <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                            Mobile warehouse management
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="order-1 lg:order-2 reveal">
+                            <div class="bg-gradient-to-br from-amber-50 to-brown-50 rounded-3xl p-8 aspect-square flex items-center justify-center relative">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-64 h-64 border-2 border-dashed border-brown-300 rounded-full animate-spin" style="animation-duration: 20s;"></div>
+                                    <div class="absolute w-48 h-48 border-2 border-dashed border-amber-400 rounded-full animate-spin" style="animation-duration: 15s; animation-direction: reverse;"></div>
+                                </div>
+                                <div class="relative bg-white rounded-3xl p-6 shadow-2xl float">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                                            <i data-lucide="package-check" class="w-6 h-6 text-green-600"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-brown-800">SKU-8921-A</div>
+                                            <div class="text-xs text-green-600">Verified • Just now</div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between text-xs">
+                                            <span class="text-brown-500">Location</span>
+                                            <span class="font-semibold text-brown-800">Zone B-12</span>
+                                        </div>
+                                        <div class="flex justify-between text-xs">
+                                            <span class="text-brown-500">Quantity</span>
+                                            <span class="font-semibold text-brown-800">1,240 units</span>
+                                        </div>
+                                        <div class="flex justify-between text-xs">
+                                            <span class="text-brown-500">Status</span>
+                                            <span class="font-semibold text-green-600">In Stock</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forecasting -->
+                <div class="tab-content hidden" data-content="forecasting">
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <div class="order-2 lg:order-1 reveal">
+                            <div class="bg-white rounded-3xl p-8 shadow-xl">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center">
+                                        <i data-lucide="brain-circuit" class="w-7 h-7 text-orange-700"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-brown-800">Predictive Analytics</h3>
+                                </div>
+                                <p class="text-brown-600 mb-6 leading-relaxed">
+                                    Our AI engine analyzes seasonality, trends, and market signals to recommend optimal stock levels and reorder points.
+                                </p>
+                                <ul class="space-y-3">
+                                    <li class="flex items-center gap-3 text-brown-700">
+                                        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                        Demand forecasting with 94% accuracy
+                                    </li>
+                                    <li class="flex items-center gap-3 text-brown-700">
+                                        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                        Automatic reorder suggestions
+                                    </li>
+                                    <li class="flex items-center gap-3 text-brown-700">
+                                        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                        Seasonal trend analysis
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="order-1 lg:order-2 reveal">
+                            <div class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl p-8 aspect-square flex items-center justify-center">
+                                <svg viewBox="0 0 400 300" class="w-full h-full">
+                                    <defs>
+                                        <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#B0865A" stop-opacity="0.2"/>
+                                            <stop offset="100%" stop-color="#D4A853" stop-opacity="0.4"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M 20 250 Q 80 200 140 220 T 260 150 T 380 80" stroke="#966B40" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                    <path d="M 20 250 Q 80 200 140 220 T 260 150 T 380 80 L 380 280 L 20 280 Z" fill="url(#lineGrad)"/>
+                                    <circle cx="140" cy="220" r="8" fill="#966B40"/>
+                                    <circle cx="260" cy="150" r="8" fill="#966B40"/>
+                                    <circle cx="380" cy="80" r="8" fill="#D4A853" class="pulse-glow"/>
+                                    <text x="360" y="60" fill="#966B40" font-size="14" font-weight="bold">Predicted Demand</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Integration -->
+                <div class="tab-content hidden" data-content="integration">
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <div class="order-2 lg:order-1 reveal">
+                            <div class="bg-white rounded-3xl p-8 shadow-xl">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <div class="w-14 h-14 rounded-2xl bg-brown-100 flex items-center justify-center">
+                                        <i data-lucide="plug" class="w-7 h-7 text-brown-700"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-brown-800">Seamless Integrations</h3>
+                                </div>
+                                <p class="text-brown-600 mb-6 leading-relaxed">
+                                    Connect with 200+ platforms including Shopify, Amazon, WooCommerce, QuickBooks, and major shipping carriers.
+                                </p>
+                                <ul class="space-y-3">
+                                    <li class="flex items-center gap-3 text-brown-700">
+                                        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                        Native e-commerce connectors
+                                    </li>
+                                    <li class="flex items-center gap-3 text-brown-700">
+                                        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                        Open API & webhooks
+                                    </li>
+                                    <li class="flex items-center gap-3 text-brown-700">
+                                        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                        ERP synchronization
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="order-1 lg:order-2 reveal">
+                            <div class="bg-gradient-to-br from-brown-50 to-amber-50 rounded-3xl p-8 aspect-square flex items-center justify-center">
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center float"><i data-lucide="shopping-bag" class="w-8 h-8 text-brown-600"></i></div>
+                                    <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center float-reverse"><i data-lucide="truck" class="w-8 h-8 text-brown-600"></i></div>
+                                    <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center float"><i data-lucide="credit-card" class="w-8 h-8 text-brown-600"></i></div>
+                                    <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center float-reverse"><i data-lucide="building-2" class="w-8 h-8 text-brown-600"></i></div>
+                                    <div class="w-20 h-20 brown-gradient rounded-2xl shadow-lg flex items-center justify-center pulse-glow"><i data-lucide="cloud" class="w-8 h-8 text-white"></i></div>
+                                    <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center float"><i data-lucide="bar-chart-2" class="w-8 h-8 text-brown-600"></i></div>
+                                    <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center float"><i data-lucide="mail" class="w-8 h-8 text-brown-600"></i></div>
+                                    <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center float-reverse"><i data-lucide="calendar" class="w-8 h-8 text-brown-600"></i></div>
+                                    <div class="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center float"><i data-lucide="box" class="w-8 h-8 text-brown-600"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reporting -->
+                <div class="tab-content hidden" data-content="reporting">
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <div class="order-2 lg:order-1 reveal">
+                            <div class="bg-white rounded-3xl p-8 shadow-xl">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center">
+                                        <i data-lucide="pie-chart" class="w-7 h-7 text-amber-700"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-brown-800">Advanced Reporting</h3>
+                                </div>
+                                <p class="text-brown-600 mb-6 leading-relaxed">
+                                    Build custom dashboards and reports to track KPIs, margins, turnover rates, and operational efficiency in real-time.
+                                </p>
+                                <ul class="space-y-3">
+                                    <li class="flex items-center gap-3 text-brown-700">
+                                        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                        Custom dashboard builder
+                                    </li>
+                                    <li class="flex items-center gap-3 text-brown-700">
+                                        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                        Scheduled automated reports
+                                    </li>
+                                    <li class="flex items-center gap-3 text-brown-700">
+                                        <i data-lucide="check" class="w-5 h-5 text-green-500"></i>
+                                        Export to PDF, Excel, CSV
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="order-1 lg:order-2 reveal">
+                            <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 aspect-square flex items-center justify-center">
+                                <div class="grid grid-cols-2 gap-4 w-full">
+                                    <div class="bg-white rounded-2xl p-4 shadow-lg">
+                                        <div class="text-xs text-brown-500 mb-2">Turnover Rate</div>
+                                        <div class="text-2xl font-bold text-brown-800">8.4x</div>
+                                        <div class="w-full h-2 bg-brown-100 rounded-full mt-2">
+                                            <div class="h-full bg-green-500 rounded-full" style="width: 84%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white rounded-2xl p-4 shadow-lg">
+                                        <div class="text-xs text-brown-500 mb-2">Stockout Rate</div>
+                                        <div class="text-2xl font-bold text-brown-800">1.2%</div>
+                                        <div class="w-full h-2 bg-brown-100 rounded-full mt-2">
+                                            <div class="h-full bg-amber-500 rounded-full" style="width: 12%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white rounded-2xl p-4 shadow-lg col-span-2">
+                                        <div class="flex items-end justify-between h-24 gap-2">
+                                            <div class="w-full bg-brown-200 rounded-t" style="height: 60%"></div>
+                                            <div class="w-full bg-brown-300 rounded-t" style="height: 75%"></div>
+                                            <div class="w-full bg-brown-400 rounded-t" style="height: 50%"></div>
+                                            <div class="w-full bg-brown-500 rounded-t" style="height: 90%"></div>
+                                            <div class="w-full bg-amber-500 rounded-t" style="height: 85%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solutions Section -->
+    <section id="solutions" class="py-24 lg:py-32 bg-white relative overflow-hidden">
+        <div class="w-full px-6 lg:px-12">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <p class="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-4">Built For Every Industry</p>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-brown-900 mb-6">Tailored solutions for your sector</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Retail -->
+                <div class="premium-card bg-gradient-to-br from-amber-50/50 to-white rounded-3xl p-8 border border-brown-100 reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="store" class="w-8 h-8 text-amber-700"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-brown-900 mb-3">Retail & E-commerce</h3>
+                    <p class="text-brown-600 mb-6">Omnichannel inventory synchronization across online stores, marketplaces, and physical locations.</p>
+                    <div class="flex items-center gap-2 text-amber-700 font-semibold">
+                        <span>Explore</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Manufacturing -->
+                <div class="premium-card bg-gradient-to-br from-orange-50/50 to-white rounded-3xl p-8 border border-brown-100 reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="factory" class="w-8 h-8 text-orange-700"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-brown-900 mb-3">Manufacturing</h3>
+                    <p class="text-brown-600 mb-6">Bill of materials, raw material tracking, and production planning for complex operations.</p>
+                    <div class="flex items-center gap-2 text-orange-700 font-semibold">
+                        <span>Explore</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Healthcare -->
+                <div class="premium-card bg-gradient-to-br from-brown-50/50 to-white rounded-3xl p-8 border border-brown-100 reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-brown-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="heart-pulse" class="w-8 h-8 text-brown-700"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-brown-900 mb-3">Healthcare</h3>
+                    <p class="text-brown-600 mb-6">Lot tracking, expiry management, and compliance tools for medical supplies.</p>
+                    <div class="flex items-center gap-2 text-brown-700 font-semibold">
+                        <span>Explore</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Logistics -->
+                <div class="premium-card bg-gradient-to-br from-amber-50/50 to-white rounded-3xl p-8 border border-brown-100 reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="truck" class="w-8 h-8 text-amber-700"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-brown-900 mb-3">Logistics</h3>
+                    <p class="text-brown-600 mb-6">3PL management, shipment tracking, and warehouse optimization tools.</p>
+                    <div class="flex items-center gap-2 text-amber-700 font-semibold">
+                        <span>Explore</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Food & Beverage -->
+                <div class="premium-card bg-gradient-to-br from-orange-50/50 to-white rounded-3xl p-8 border border-brown-100 reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="utensils" class="w-8 h-8 text-orange-700"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-brown-900 mb-3">Food & Beverage</h3>
+                    <p class="text-brown-600 mb-6">FEFO inventory rotation, temperature monitoring, and recall management.</p>
+                    <div class="flex items-center gap-2 text-orange-700 font-semibold">
+                        <span>Explore</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Automotive -->
+                <div class="premium-card bg-gradient-to-br from-brown-50/50 to-white rounded-3xl p-8 border border-brown-100 reveal group">
+                    <div class="w-16 h-16 rounded-2xl bg-brown-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="car" class="w-8 h-8 text-brown-700"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-brown-900 mb-3">Automotive</h3>
+                    <p class="text-brown-600 mb-6">Parts cataloging, VIN tracking, and service inventory management.</p>
+                    <div class="flex items-center gap-2 text-brown-700 font-semibold">
+                        <span>Explore</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 transform group-hover:translate-x-2 transition-transform"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-24 lg:py-32 relative overflow-hidden gradient-bg">
+        <div class="orb w-[600px] h-[600px] bg-amber-100 top-[-200px] left-[-200px]"></div>
+        <div class="w-full px-6 lg:px-12 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <p class="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-4">How It Works</p>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-brown-900 mb-6">Get started in <span class="italic gradient-text">minutes</span>, not months</h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
+                <div class="relative reveal">
+                    <div class="bg-white rounded-3xl p-8 shadow-lg h-full premium-card relative z-10">
+                        <div class="w-16 h-16 rounded-full brown-gradient flex items-center justify-center text-white text-2xl font-bold mb-6">1</div>
+                        <h3 class="text-2xl font-bold text-brown-900 mb-3">Connect Your Channels</h3>
+                        <p class="text-brown-600">Integrate your warehouses, stores, and sales channels with our plug-and-play connectors.</p>
+                    </div>
+                    <div class="hidden md:block absolute top-1/2 -right-6 w-12 h-0.5 bg-brown-300 z-0"></div>
+                </div>
+
+                <div class="relative reveal">
+                    <div class="bg-white rounded-3xl p-8 shadow-lg h-full premium-card relative z-10">
+                        <div class="w-16 h-16 rounded-full brown-gradient flex items-center justify-center text-white text-2xl font-bold mb-6">2</div>
+                        <h3 class="text-2xl font-bold text-brown-900 mb-3">Sync Your Inventory</h3>
+                        <p class="text-brown-600">Real-time synchronization ensures accurate stock levels across every location and platform.</p>
+                    </div>
+                    <div class="hidden md:block absolute top-1/2 -right-6 w-12 h-0.5 bg-brown-300 z-0"></div>
+                </div>
+
+                <div class="relative reveal">
+                    <div class="bg-white rounded-3xl p-8 shadow-lg h-full premium-card relative z-10">
+                        <div class="w-16 h-16 rounded-full brown-gradient flex items-center justify-center text-white text-2xl font-bold mb-6">3</div>
+                        <h3 class="text-2xl font-bold text-brown-900 mb-3">Optimize & Scale</h3>
+                        <p class="text-brown-600">Leverage AI insights to reduce costs, prevent stockouts, and accelerate growth.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-24 lg:py-32 bg-brown-900 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-0 left-0 w-full h-full" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 50px 50px;"></div>
+        </div>
+        
+        <div class="w-full px-6 lg:px-12 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <p class="text-sm font-semibold text-amber-300 uppercase tracking-widest mb-4">Customer Stories</p>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">Loved by operations teams worldwide</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="glass-dark rounded-3xl p-8 testimonial-card reveal">
+                    <div class="flex items-center gap-1 mb-4">
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                    </div>
+                    <p class="text-amber-50/90 mb-6 leading-relaxed">"CloudStock reduced our stockout rate by 78% in the first quarter. The real-time dashboards are a game-changer for our purchasing team."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 font-bold text-lg">SM</div>
+                        <div>
+                            <div class="font-bold text-white">Sarah Mitchell</div>
+                            <div class="text-sm text-amber-200/60">COO, LuxeRetail</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-dark rounded-3xl p-8 testimonial-card reveal">
+                    <div class="flex items-center gap-1 mb-4">
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                    </div>
+                    <p class="text-amber-50/90 mb-6 leading-relaxed">"The AI forecasting saved us $2.3M in excess inventory last year. It's like having a data scientist dedicated to our stock levels."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 font-bold text-lg">JC</div>
+                        <div>
+                            <div class="font-bold text-white">James Chen</div>
+                            <div class="text-sm text-amber-200/60">VP Operations, TechFlow</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-dark rounded-3xl p-8 testimonial-card reveal">
+                    <div class="flex items-center gap-1 mb-4">
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+                    </div>
+                    <p class="text-amber-50/90 mb-6 leading-relaxed">"Implementation was seamless. We were live across 12 warehouses in under three weeks with full team adoption."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-200 flex items-center justify-center text-amber-800 font-bold text-lg">ER</div>
+                        <div>
+                            <div class="font-bold text-white">Elena Rodriguez</div>
+                            <div class="text-sm text-amber-200/60">Director, Meridian Logistics</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24 lg:py-32 bg-white relative overflow-hidden">
+        <div class="orb w-[500px] h-[500px] bg-amber-50 bottom-[-200px] right-[-200px]"></div>
+        <div class="w-full px-6 lg:px-12 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <p class="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-4">Pricing</p>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-brown-900 mb-6">Simple, transparent pricing</h2>
+                <p class="text-lg text-brown-600">Choose the plan that fits your business. Scale up or down anytime.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+                <!-- Starter -->
+                <div class="premium-card bg-amber-50/50 rounded-3xl p-8 border border-brown-100 reveal">
+                    <div class="text-sm font-semibold text-brown-500 uppercase tracking-wider mb-4">Starter</div>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-5xl font-bold text-brown-900">$49</span>
+                        <span class="text-brown-500">/month</span>
+                    </div>
+                    <p class="text-brown-600 mb-8">Perfect for small businesses getting started with inventory management.</p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-brown-700">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-600"></i>
+                            Up to 1,000 SKUs
+                        </li>
+                        <li class="flex items-center gap-3 text-brown-700">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-600"></i>
+                            2 warehouse locations
+                        </li>
+                        <li class="flex items-center gap-3 text-brown-700">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-600"></i>
+                            Basic reporting
+                        </li>
+                        <li class="flex items-center gap-3 text-brown-700">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-600"></i>
+                            Email support
+                        </li>
+                    </ul>
+                    <button class="w-full btn-outline py-3 rounded-full font-semibold">Get Started</button>
+                </div>
+
+                <!-- Professional -->
+                <div class="pricing-featured premium-card brown-gradient rounded-3xl p-8 shadow-2xl reveal relative">
+                    <div class="absolute top-0 right-8 transform -translate-y-1/2">
+                        <div class="bg-amber-400 text-brown-900 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">Most Popular</div>
+                    </div>
+                    <div class="text-sm font-semibold text-amber-200 uppercase tracking-wider mb-4">Professional</div>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-5xl font-bold text-white">$149</span>
+                        <span class="text-amber-200">/month</span>
+                    </div>
+                    <p class="text-amber-100 mb-8">For growing businesses that need advanced analytics and automation.</p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-white">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-300"></i>
+                            Up to 25,000 SKUs
+                        </li>
+                        <li class="flex items-center gap-3 text-white">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-300"></i>
+                            10 warehouse locations
+                        </li>
+                        <li class="flex items-center gap-3 text-white">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-300"></i>
+                            AI demand forecasting
+                        </li>
+                        <li class="flex items-center gap-3 text-white">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-300"></i>
+                            Advanced integrations
+                        </li>
+                        <li class="flex items-center gap-3 text-white">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-300"></i>
+                            Priority support
+                        </li>
+                    </ul>
+                    <button class="w-full bg-white text-brown-800 py-3 rounded-full font-semibold hover:bg-amber-50 transition-colors">Get Started</button>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="premium-card bg-amber-50/50 rounded-3xl p-8 border border-brown-100 reveal">
+                    <div class="text-sm font-semibold text-brown-500 uppercase tracking-wider mb-4">Enterprise</div>
+                    <div class="flex items-baseline gap-1 mb-6">
+                        <span class="text-5xl font-bold text-brown-900">Custom</span>
+                    </div>
+                    <p class="text-brown-600 mb-8">Tailored solutions for large organizations with complex requirements.</p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-brown-700">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-600"></i>
+                            Unlimited SKUs
+                        </li>
+                        <li class="flex items-center gap-3 text-brown-700">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-600"></i>
+                            Unlimited locations
+                        </li>
+                        <li class="flex items-center gap-3 text-brown-700">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-600"></i>
+                            Dedicated success manager
+                        </li>
+                        <li class="flex items-center gap-3 text-brown-700">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-600"></i>
+                            Custom integrations
+                        </li>
+                        <li class="flex items-center gap-3 text-brown-700">
+                            <i data-lucide="check" class="w-5 h-5 text-amber-600"></i>
+                            SLA guarantees
+                        </li>
+                    </ul>
+                    <button class="w-full btn-outline py-3 rounded-full font-semibold">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-24 lg:py-32 gradient-bg relative overflow-hidden">
+        <div class="w-full px-6 lg:px-12">
+            <div class="grid lg:grid-cols-2 gap-16 items-start max-w-6xl mx-auto">
+                <div class="reveal">
+                    <p class="text-sm font-semibold text-amber-600 uppercase tracking-widest mb-4">FAQ</p>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-brown-900 mb-6">Questions? We have answers.</h2>
+                    <p class="text-lg text-brown-600 mb-8">Everything you need to know about CloudStock. Can't find what you're looking for? Contact our team.</p>
+                    <a href="#demo" class="btn-primary inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold">
+                        Contact Support
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                </div>
+
+                <div class="space-y-4 reveal">
+                    <div class="accordion-item bg-white rounded-2xl shadow-sm border border-brown-100 active">
+                        <button class="accordion-header w-full flex items-center justify-between p-6 text-left">
+                            <span class="text-lg font-bold text-brown-800">How does the free trial work?</span>
+                            <div class="accordion-icon w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center transition-transform">
+                                <i data-lucide="plus" class="w-4 h-4 text-amber-700"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content">
+                            <p class="px-6 pb-6 text-brown-600">Start with a 14-day free trial with full access to all Professional features. No credit card required. You can upgrade, downgrade, or cancel anytime.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item bg-white rounded-2xl shadow-sm border border-brown-100">
+                        <button class="accordion-header w-full flex items-center justify-between p-6 text-left">
+                            <span class="text-lg font-bold text-brown-800">Can I import data from my existing system?</span>
+                            <div class="accordion-icon w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center transition-transform">
+                                <i data-lucide="plus" class="w-4 h-4 text-amber-700"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content">
+                            <p class="px-6 pb-6 text-brown-600">Yes. CloudStock supports CSV, Excel, and direct API imports from most major inventory systems, ERPs, and e-commerce platforms.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item bg-white rounded-2xl shadow-sm border border-brown-100">
+                        <button class="accordion-header w-full flex items-center justify-between p-6 text-left">
+                            <span class="text-lg font-bold text-brown-800">Is my data secure in the cloud?</span>
+                            <div class="accordion-icon w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center transition-transform">
+                                <i data-lucide="plus" class="w-4 h-4 text-amber-700"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content">
+                            <p class="px-6 pb-6 text-brown-600">Absolutely. We use AES-256 encryption, SOC 2 Type II compliance, regular penetration testing, and role-based access controls to protect your data.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item bg-white rounded-2xl shadow-sm border border-brown-100">
+                        <button class="accordion-header w-full flex items-center justify-between p-6 text-left">
+                            <span class="text-lg font-bold text-brown-800">Do you offer onboarding support?</span>
+                            <div class="accordion-icon w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center transition-transform">
+                                <i data-lucide="plus" class="w-4 h-4 text-amber-700"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content">
+                            <p class="px-6 pb-6 text-brown-600">Yes. All plans include onboarding resources. Professional plans include guided setup, and Enterprise plans include a dedicated implementation manager.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="demo" class="py-24 lg:py-32 brown-gradient relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-full h-full" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 0); background-size: 40px 40px;"></div>
+        </div>
+        <div class="orb w-[500px] h-[500px] bg-amber-500/20 top-[-200px] right-[-200px]"></div>
+        
+        <div class="w-full px-6 lg:px-12 relative z-10">
+            <div class="max-w-5xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="reveal">
+                        <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">Ready to transform your inventory?</h2>
+                        <p class="text-lg text-amber-100/80 mb-8">Join 10,000+ businesses already using CloudStock to optimize their operations. Start your free trial today.</p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="#" class="bg-white text-brown-800 px-8 py-4 rounded-full font-semibold hover:bg-amber-50 transition-colors text-center">Start Free Trial</a>
+                            <a href="#" class="border-2 border-white/30 text-white px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-colors text-center">Talk to Sales</a>
+                        </div>
+                    </div>
+
+                    <div class="reveal">
+                        <form class="glass-dark rounded-3xl p-8">
+                            <h3 class="text-2xl font-bold text-white mb-6">Schedule a demo</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-amber-100/80 mb-2">Work Email</label>
+                                    <input type="email" placeholder="you@company.com" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-amber-100/80 mb-2">Company Name</label>
+                                    <input type="text" placeholder="Your company" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-amber-100/80 mb-2">Message</label>
+                                    <textarea rows="3" placeholder="Tell us about your needs" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 resize-none"></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-amber-400 text-brown-900 py-4 rounded-xl font-bold hover:bg-amber-300 transition-colors">Request Demo</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brown-950 text-amber-50/80 py-16">
+        <div class="w-full px-6 lg:px-12">
+            <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
+                <div class="lg:col-span-2">
+                    <a href="#" class="flex items-center gap-2 mb-6">
+                        <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center">
+                            <i data-lucide="cloud" class="w-5 h-5 text-brown-900"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-white font-['Playfair_Display']">CloudStock</span>
+                    </a>
+                    <p class="text-amber-100/60 mb-6 max-w-sm">The premium cloud-based inventory management system for modern enterprises. Track, optimize, and scale with confidence.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 hover:text-brown-900 transition-colors">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 hover:text-brown-900 transition-colors">
+                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-amber-500 hover:text-brown-900 transition-colors">
+                            <i data-lucide="github" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4">Product</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Integrations</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Changelog</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4">Company</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4">Resources</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">API Reference</a></li>
+                        <li><a href="#" class="hover:text-amber-400 transition-colors">Status</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-amber-100/40">© 2026 CloudStock. All rights reserved.</p>
+                <div class="flex gap-6 text-sm text-amber-100/40">
+                    <a href="#" class="hover:text-amber-400 transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-amber-400 transition-colors">Terms of Service</a>
+                    <a href="#" class="hover:text-amber-400 transition-colors">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Loading Screen
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            const loaderBar = document.getElementById('loaderBar');
+            
+            loaderBar.style.width = '100%';
+            
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                initAnimations();
+            }, 1500);
+        });
+
+        // Custom Cursor
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        
+        if (cursorDot && cursorOutline) {
+            window.addEventListener('mousemove', (e) => {
+                const posX = e.clientX;
+                const posY = e.clientY;
+                
+                cursorDot.style.left = `${posX}px`;
+                cursorDot.style.top = `${posY}px`;
+                
+                cursorOutline.animate({
+                    left: `${posX}px`,
+                    top: `${posY}px`
+                }, { duration: 500, fill: 'forwards' });
+            });
+
+            document.querySelectorAll('a, button, .premium-card, .accordion-header, .tab-btn').forEach(el => {
+                el.addEventListener('mouseenter', () => cursorOutline.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hover'));
+            });
+        }
+
+        // Scroll Progress
+        const scrollProgress = document.getElementById('scrollProgress');
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = `${progress}%`;
+        });
+
+        // Navigation visibility
+        const navbar = document.getElementById('navbar');
+        let lastScroll = 0;
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+            
+            if (currentScroll > 100) {
+                navbar.classList.remove('nav-hidden');
+                navbar.classList.add('nav-visible');
+            } else {
+                navbar.classList.add('nav-hidden');
+                navbar.classList.remove('nav-visible');
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('translate-x-full');
+        });
+        
+        mobileMenuClose.addEventListener('click', () => {
+            mobileMenu.classList.add('translate-x-full');
+        });
+        
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('translate-x-full');
+            });
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('bg-brown-700', 'text-white');
+                    b.classList.add('bg-brown-100', 'text-brown-700');
+                });
+                
+                btn.classList.add('active', 'bg-brown-700', 'text-white');
+                btn.classList.remove('bg-brown-100', 'text-brown-700');
+                
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                });
+                
+                const activeContent = document.querySelector(`.tab-content[data-content="${tab}"]`);
+                activeContent.classList.remove('hidden');
+                activeContent.classList.add('active');
+                
+                // Re-trigger reveal animations for active content
+                const reveals = activeContent.querySelectorAll('.reveal');
+                reveals.forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(30px)';
+                });
+                
+                setTimeout(() => {
+                    reveals.forEach((el, i) => {
+                        setTimeout(() => {
+                            el.style.transition = 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)';
+                            el.style.opacity = '1';
+                            el.style.transform = 'translateY(0)';
+                        }, i * 100);
+                    });
+                }, 50);
+            });
+        });
+
+        // Accordion
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                const isActive = item.classList.contains('active');
+                
+                document.querySelectorAll('.accordion-item').forEach(acc => {
+                    acc.classList.remove('active');
+                });
+                
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Counter Animation
+        function animateCounter(element, target, suffix = '') {
+            const duration = 2000;
+            const start = 0;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = start + (target - start) * easeOut;
+                
+                if (target % 1 !== 0) {
+                    element.textContent = current.toFixed(1);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // Progress Ring Animation
+        function animateProgressRing(circle) {
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            const percent = parseFloat(circle.dataset.percent);
+            const offset = circumference - (percent / 100) * circumference;
+            
+            circle.style.strokeDashoffset = offset;
+        }
+
+        // Initialize Animations
+        function initAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Hero animations
+            gsap.to('.hero-content', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                stagger: 0.1,
+                ease: 'power3.out'
+            });
+
+            // Reveal animations
+            const revealElements = document.querySelectorAll('.reveal');
+            revealElements.forEach((el) => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: 'power3.out'
+                });
+            });
+
+            // Counter animations
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                const target = parseFloat(stat.dataset.target);
+                
+                ScrollTrigger.create({
+                    trigger: stat,
+                    start: 'top 85%',
+                    onEnter: () => {
+                        if (!stat.classList.contains('counted')) {
+                            stat.classList.add('counted');
+                            animateCounter(stat, target);
+                        }
+                    }
+                });
+            });
+
+            // Progress ring animations
+            const progressRings = document.querySelectorAll('.progress-ring-circle');
+            progressRings.forEach(ring => {
+                ScrollTrigger.create({
+                    trigger: ring,
+                    start: 'top 85%',
+                    onEnter: () => {
+                        if (!ring.classList.contains('animated')) {
+                            ring.classList.add('animated');
+                            animateProgressRing(ring);
+                        }
+                    }
+                });
+            });
+
+            // Dashboard 3D tilt on mouse move
+            const dashboard = document.querySelector('.dashboard-mockup');
+            if (dashboard) {
+                dashboard.addEventListener('mousemove', (e) => {
+                    const rect = dashboard.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 30;
+                    const rotateY = (centerX - x) / 30;
+                    
+                    const card = dashboard.querySelector('.dashboard-card');
+                    card.style.transform = `rotateX(${5 - rotateX}deg) rotateY(${-15 + rotateY}deg)`;
+                });
+                
+                dashboard.addEventListener('mouseleave', () => {
+                    const card = dashboard.querySelector('.dashboard-card');
+                    card.style.transform = 'rotateY(-15deg) rotateX(5deg)';
+                });
+            }
+
+            // Parallax effect for orbs
+            document.querySelectorAll('.orb').forEach(orb => {
+                gsap.to(orb, {
+                    scrollTrigger: {
+                        trigger: orb.parentElement,
+                        start: 'top bottom',
+                        end: 'bottom top',
+                        scrub: 1
+                    },
+                    y: 100,
+                    ease: 'none'
+                });
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submission
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = 'Demo Requested!';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                e.target.reset();
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
