@@ -1,4 +1,4 @@
-# CloudStock — Cloud-Based Inventory Management System
+# Cloud-Based Inventory Management System
 
 CloudStock is a premium, responsive front-end concept for a **cloud-based inventory management system**. It presents inventory intelligence, analytics, forecasting, multi-location synchronization, pricing, and a demo request experience through a polished enterprise-style interface.
 
